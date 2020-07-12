@@ -23,8 +23,6 @@ namespace AgentLauncher
                 ToPoint("70,70,0")
             };
 
-            //QActiveTest.exe 172.26.21.55 38244 3 172.26.21.53 38245 1 172.26.21.53 38246 2 50,10,200 50,0,0
-
             string ip = "1127.0.0.1";           
             string ip3 = "127.0.0.1";
             string port1 = "38245";
@@ -44,6 +42,7 @@ namespace AgentLauncher
 
 
             //==> TODO Move this logic to Agent itself, to allow an Agent decide and act absolutely independently
+
             var result = GeometryHelper.MapAgentToFigurePoints(agentsInfo, figure).ToArray();
 
 
