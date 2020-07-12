@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AgentVisualisator
+﻿namespace AgentVisualisator
 {
     partial class Form1
     {
@@ -31,7 +29,7 @@ namespace AgentVisualisator
         /// 
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            this.chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.listBox1 = new System.Windows.Forms.ListBox();
@@ -75,7 +73,6 @@ namespace AgentVisualisator
             this.chart1.TabIndex = 7;
             this.chart1.Text = "chart1";
             this.chart1.PostPaint += new System.EventHandler<System.Windows.Forms.DataVisualization.Charting.ChartPaintEventArgs>(this.chart1_PostPaint);
-            this.chart1.Click += new System.EventHandler(this.chart1_Click);
             // 
             // Form1
             // 
@@ -91,11 +88,6 @@ namespace AgentVisualisator
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
             this.ResumeLayout(false);
 
-        }
-
-        private void chart1_Click(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
         }
 
         #endregion

@@ -30,7 +30,12 @@ namespace AgentVisualisator.Graphic
 
         void ConfigureChartArea(ChartArea ca)
         {
-            ca.Area3DStyle.Enable3D = true;  // set the chartarea to 3D!
+
+            // set the chartarea to 3D!
+            ca.Area3DStyle.Enable3D = true;  //!!! In case of NullReference Exception on this line -  please check initialisation of this.chartArea1 in Designer file
+            //it should be like this.chartArea1 = new ChartArea();
+
+
             ca.AxisX.Minimum = -250;
             ca.AxisY.Minimum = -250;
             ca.AxisX.Maximum = 250;
