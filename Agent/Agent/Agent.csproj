@@ -105,6 +105,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Agent.cs" />
+    <Compile Include="AppOptions.cs" />
     <Compile Include="GeometryHelper.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Program.cs" />
