@@ -94,15 +94,16 @@ namespace AgentVisualisator
             var tcpAgent = new TCPClient(0);
             tcpAgent.form = this;
             string ip = "127.0.0.1";
+            string ip2 = "127.0.0.1";
             string ip3 = "127.0.0.1";
             int port1 = 38245;
             int port2 = 38246;
             int port3 = 38244;
 
 
-            var t2 = Task.Run(() => tcpAgent.RunClient(IPAddress.Parse("127.0.0.1"), 38245, 1));
-            var t1 = Task.Run(() => tcpAgent.RunClient(IPAddress.Parse("127.0.0.1"), 38246, 2));
-            var t3 = Task.Run(() => tcpAgent.RunClient(IPAddress.Parse("127.0.0.1"), 38244, 3));
+            var t2 = Task.Run(() => tcpAgent.RunClient(IPAddress.Parse(ip), port1, 1));
+            var t1 = Task.Run(() => tcpAgent.RunClient(IPAddress.Parse(ip2), port2, 2));
+            var t3 = Task.Run(() => tcpAgent.RunClient(IPAddress.Parse(ip3), port3, 3));
             //var t4 = Task.Run(() => tcpAgent.RunClient(IPAddress.Parse("127.0.0.1"), 38243, 4));
 
 
@@ -142,5 +143,5 @@ namespace AgentVisualisator
         {
 
         }
-    }    
+    }
 }
