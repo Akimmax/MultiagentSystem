@@ -18,13 +18,13 @@ The software product must have the following characteristics:
 5. A person using the application should be able to observe the state and position of agents in space in real time
 
 ## The result of work of the agent ¹2 (console output)
-![Alt text](doc/Image1.png)
+![Alt text](https://github.com/Akimmax/MultiagentSystem/blob/develop/doc/Image1.PNG?raw=true)
 
 ## The result of the work of three agents (creating a triangle in space)
-![Alt text](doc/Image2.png)
+![Alt text](https://github.com/Akimmax/MultiagentSystem/blob/develop/doc/Image2.PNG?raw=true)
 
 ## Diagram
-![Alt text](doc/Image3.png)
+![Alt text](https://github.com/Akimmax/MultiagentSystem/blob/develop/doc/Image3.PNG?raw=true)
 
 ## Conclusions
 Agents in a multiagent system have the following characteristics:
