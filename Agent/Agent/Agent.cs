@@ -20,11 +20,12 @@ namespace Agent
         private IPEndPoint _endPoint;
         Subject<string> subject = new Subject<string>();
         private int _agentId;
-        
+        private readonly object lockObj = new object();
+
         Dictionary<int, Point3D> lastPositionsKnownAgents = new Dictionary<int, Point3D>();
         //==================================== ==>TODO Extract into separate class
         //Point _currentPosition = new Point(0, 0);
-        Point3D _currentPosition2 = new Point3D(0, 0, 0);//==>3D
+        Point3D _currentPosition2 = new Point3D(0, 0, 0);//==>TODO Rename
         double _step = 8;
         //==================================== ==>TODO Extract into separate class
         public Agent(IPAddress endPoint, int port, int id)
@@ -33,35 +34,37 @@ namespace Agent
             _agentId = id;
         }
 
-        public void SetPosition2(Point3D position)//==>3D
+        public void SetPosition2(Point3D position)//==>TODO Rename
         {
             _currentPosition2 = position;
         }
 
-        public void StartService()
+        public void StartService()//==>TODO Extract into separate class
         {
 
             Logger.PrintServerStarted(_agentId, _endPoint);
 
             IObservable<string> source = subject.AsObservable();
+
             source.Subscribe(value => {
                 var messsege = JsonSerializer.Deserialize<TCPMesssege3D>(value);
                 Logger.PrintGeneratedMessage(_agentId, messsege);
             });
+
             subject.OnNext(
-                JsonSerializer.Serialize(new TCPMesssege3D() { senderId = _agentId, currentPosition3D = _currentPosition2, details = "As" }
+                JsonSerializer.Serialize(new TCPMesssege3D() { senderId = _agentId, currentPosition3D = _currentPosition2, details = "details" }
                 ));
 
             var service = source.ServeQbservableTcp<string>(
               _endPoint,
-               new QbservableServiceOptions() { SendServerErrorsToClients = true, EnableDuplex = true, AllowExpressionsUnrestricted = true });////==> TODO extract to log
+               new QbservableServiceOptions() { SendServerErrorsToClients = true, EnableDuplex = true, AllowExpressionsUnrestricted = true });
     
             service.Subscribe(
               terminatedClient =>
               {
                   foreach (var ex in terminatedClient.Exceptions)
                   {
-                      Console.WriteLine("Basic service error: {0}", ex.SourceException.Message);
+                      Console.WriteLine("Basic service error: {0}", ex.SourceException.Message);//==>TODO Extract messeges to logger
                   }
 
                   Console.WriteLine("Basic client shutdown: " + terminatedClient);
@@ -71,7 +74,7 @@ namespace Agent
         }
 
 
-        public void RunClient(IPAddress endPoint, int port, int name)
+        public void RunClient(IPAddress endPoint, int port, int name)//==>TODO Extract into separate class
         {
             var client = new TcpQbservableClient<string>(endPoint, port);
 
@@ -81,13 +84,13 @@ namespace Agent
 
             using (query.Subscribe(
               value => {
-                  var messsege = JsonSerializer.Deserialize<TCPMesssege3D>(value); ////==>   extract to log
+                  var messsege = JsonSerializer.Deserialize<TCPMesssege3D>(value);
 
                   Logger.PrintReceivedMessage(_agentId, messsege, name);
                   SaveAgentPosition(_agentId, messsege.currentPosition3D);
               },
-              ex => Console.WriteLine("Error In agent #{1} in client #{2}: {0}", ex.Message, _agentId, name),
-              () => Console.WriteLine("In agent #{0} client #{1} completed", _agentId, name)))
+              ex => Console.WriteLine("Error In agent #{1} in client #{2}: {0}", ex.Message, _agentId, name), //==>TODO Extract messeges to logger
+              () => Console.WriteLine("In agent #{0} client #{1} completed", _agentId, name))) 
             {
                 Console.WriteLine("Agent #{0} client #{1} started.  Waiting for basic service notifications...", _agentId, name);
                 Console.ReadKey(intercept: true); ////==> TODO remove but safely
@@ -112,17 +115,13 @@ namespace Agent
                 {
                     PublishNextAgentPosition2(nextPosition);
                     _currentPosition2 = nextPosition;
-
-                    //_currentPosition2 = GeometryHelper.GetNextPosition(_currentPosition2, targetPosition, _step);
                 }
                 else
                 {
-                    PublishNextAgentPosition2(_currentPosition2);//Skip step 
-                    //_currentPosition2 = GeometryHelper.GetNextPosition(_currentPosition2, targetPosition, _step);
+                    PublishNextAgentPosition2(_currentPosition2);//Skip step. wait until moving safe
                     Logger.PrintTraectoryConflict(_agentId, _currentPosition2);
                 }
-
-                //PublishCurrentAgentPosition2();
+                
                 i++;
                 Thread.Sleep(1000);
             }
@@ -140,12 +139,13 @@ namespace Agent
 
         public void SaveAgentPosition(int agentId, Point3D position)
         {
-
-            ///==>TODO Make update tread safe using monitor
-            if (lastPositionsKnownAgents.ContainsKey(agentId))
-                lastPositionsKnownAgents[agentId] = position; // or throw exception        
-            else
-                lastPositionsKnownAgents.Add(agentId, position);
+            lock (lockObj)
+            {
+                if (lastPositionsKnownAgents.ContainsKey(agentId))
+                    lastPositionsKnownAgents[agentId] = position; // or throw exception        
+                else
+                    lastPositionsKnownAgents.Add(agentId, position);
+            }
         }
         public bool CheckIfAgentCrashOtherAgentOnNextStep(Point3D nextPosition)
         {
@@ -156,14 +156,14 @@ namespace Agent
         //==================================== ==>TODO Extract into separate class
     }
 
-    //[Serializable]
+
     class TCPMesssege3D
     {
         public int senderId { get; set; } //==>TODO Name To PascalCase
-        //public Point currentPosition { get; set; }
+
 
         public Point3D currentPosition3D { get; set; }
-        //public Point nextPosition;
+
         public string details { get; set; }
     }
 }

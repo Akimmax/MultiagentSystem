@@ -7,6 +7,9 @@ namespace Agent
 {
     class GeometryHelper
     {
+        //==> TODO Move code to shared geometry libary
+        //==> TODO Add tests
+        //Find the fastest way to make figure using agents, find nearest corner of figure for each agent
         public static IEnumerable<AgentInfo> MapAgentToFigurePoints(AgentInfo[] agentsInfo, Figure figure)
         {
             List<Point3D> tempPointSet = new List<Point3D>(figure.PointSet);
@@ -36,6 +39,7 @@ namespace Agent
 
         }
 
+        //==>TODO add math formula
         public static double GetDistanseBetweenPoints(Point3D point1, Point3D point2)
         {
             return new Vector3D(
@@ -45,24 +49,26 @@ namespace Agent
                        .Length;
         }
 
+        //==>TODO add math formula
         public static Point3D GetNextPosition(Point3D currentPos, Point3D tergetPos, double step)
         {   
             Vector3D vector = new Vector3D(tergetPos.X - currentPos.X, tergetPos.Y - currentPos.Y, tergetPos.Z - currentPos.Z);
             if (vector.Length < step) return tergetPos;
-            Vector3D stepVector = Vector3D.Divide(vector, vector.Length / step);
-            return new Point3D(currentPos.X + stepVector.X, currentPos.Y + stepVector.Y, currentPos.Z + stepVector.Z);
+            Vector3D stepVector = Vector3D.Divide(vector, vector.Length / step);//get vector with correct direction and length which is equal to step
+            return new Point3D(currentPos.X + stepVector.X, currentPos.Y + stepVector.Y, currentPos.Z + stepVector.Z);//vectors sum
         }
 
+        //==>TODO add math formula
         public static bool CheckIfPointCrossSpheres(Point3D point, Point3D[] sphereCentres, double sphereRadius)
         {
             foreach (var sphereCentre in sphereCentres)
             {
                 double distanse = GetDistanseBetweenPoints(point, sphereCentre);
-                if (sphereRadius > distanse) {
+                if (sphereRadius > distanse) {//sphere contains point
                     Console.WriteLine("cross with #{0}  #{1} . {2} ", sphereCentre.X, sphereCentre.Y, sphereCentre.Z);
                     return true;
                 }
-                 //sphere contains point
+                 
             }
                 return false;
         }

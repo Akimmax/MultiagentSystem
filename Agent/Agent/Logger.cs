@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
 
 namespace Agent
 {
+
+    //==> TODO Write to file or db instead console
     class Logger
     {
         public static void PrintServerStarted(int _agentId, IPEndPoint _endPoint)

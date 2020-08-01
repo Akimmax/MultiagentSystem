@@ -9,9 +9,10 @@ using System.Windows.Media.Media3D;
 namespace Agent
 {
 
+    //==>TODO rework to receive unlimited numbers of agents
     class AppOptions
     {
-
+        //==>TODO Rework using reflection
         public void initalOptions(string[] args)
         {
             Console.WriteLine("initalOptions " + args.ToString());
@@ -26,9 +27,6 @@ namespace Agent
             this.clientIp2 = args[6];
             this.clientPort2 = int.Parse(args[7]);
             this.clientId2 = int.Parse(args[8]);
-
-            this.currentPosition = getPoints(args[9]);
-            this.targetPosition = getPoints(args[10]);
 
             this.currentPosition3D = get3DPoint(args[9]);
             this.targetPosition3D = get3DPoint(args[10]);
@@ -49,22 +47,10 @@ namespace Agent
             Console.WriteLine(this.clientIp2);
             Console.WriteLine(this.clientPort2);
             Console.WriteLine(this.clientId2);
-            Console.WriteLine(this.currentPosition);
-            Console.WriteLine(this.targetPosition);
+
             Console.WriteLine(this.currentPosition3D);
             Console.WriteLine(this.targetPosition3D);
 
-        }
-
-        static public Point getPoints(string args)
-        {
-            var points = args.Split(',').ToList<string>();
-            var ints = points.Select(str => {
-                bool success = int.TryParse(str, out int value);
-                return new { value, success };
-            }).Where(pair => pair.success).Select(pair => pair.value).ToArray();
-
-            return new Point(ints[0], ints[1]);
         }
 
         static public Point3D get3DPoint(string args)
@@ -87,9 +73,7 @@ namespace Agent
         public string clientIp2;
         public int clientPort2;
         public int clientId2;
-        public Point currentPosition;
-        public Point targetPosition;
-        public Point3D currentPosition3D;
-        public Point3D targetPosition3D;
+        public Point3D currentPosition3D;//==>TODO Rename
+        public Point3D targetPosition3D;//==>TODO Rename
     }
 }
