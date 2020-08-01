@@ -1,15 +1,11 @@
 ﻿using Qactive;
 using System;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Text.Json;////==> TODO use newtosoft
-using System.Text.Json.Serialization;
 using System.Windows.Media.Media3D;
 
 namespace AgentVisualisator

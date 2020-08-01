@@ -10,10 +10,6 @@ namespace AgentVisualisator.Graphic
         Chart3DGraphicsRenderer renderingHelper;
 
         const int pointwidth = 4;
-        const int xMin = -300;
-        const int yMin = -300;
-        const int xMax = 300;
-        const int yMax = 300;
         public Chart3DGraphicsVisualisator()//TODO Use builder pattern
         {
             renderingHelper = new Chart3DGraphicsRenderer();
@@ -30,11 +26,8 @@ namespace AgentVisualisator.Graphic
 
         void ConfigureChartArea(ChartArea ca)
         {
-
             // set the chartarea to 3D!
-            ca.Area3DStyle.Enable3D = true;  //!!! In case of NullReference Exception on this line -  please check initialisation of this.chartArea1 in Designer file
-            //it should be like this.chartArea1 = new ChartArea();
-
+            ca.Area3DStyle.Enable3D = true;  //!!! In case of NullReference Exception on this line -  please check initialisation of this.chartArea1 in Designer file. it should be like this.chartArea1 = new ChartArea();
 
             ca.AxisX.Minimum = -250;
             ca.AxisY.Minimum = -250;

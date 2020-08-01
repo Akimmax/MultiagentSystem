@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Media.Media3D;
 
 namespace Agent
@@ -28,8 +24,8 @@ namespace Agent
             this.clientPort2 = int.Parse(args[7]);
             this.clientId2 = int.Parse(args[8]);
 
-            this.currentPosition3D = get3DPoint(args[9]);
-            this.targetPosition3D = get3DPoint(args[10]);
+            this.currentPosition = get3DPoint(args[9]);
+            this.targetPosition = get3DPoint(args[10]);
 
         }
         //==>TODO Rework using reflection
@@ -48,8 +44,8 @@ namespace Agent
             Console.WriteLine(this.clientPort2);
             Console.WriteLine(this.clientId2);
 
-            Console.WriteLine(this.currentPosition3D);
-            Console.WriteLine(this.targetPosition3D);
+            Console.WriteLine(this.currentPosition);
+            Console.WriteLine(this.targetPosition);
 
         }
 
@@ -73,7 +69,7 @@ namespace Agent
         public string clientIp2;
         public int clientPort2;
         public int clientId2;
-        public Point3D currentPosition3D;//==>TODO Rename
-        public Point3D targetPosition3D;//==>TODO Rename
+        public Point3D currentPosition;
+        public Point3D targetPosition;
     }
 }
