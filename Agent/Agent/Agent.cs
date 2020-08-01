@@ -13,7 +13,6 @@ namespace Agent
 {
     class Agent
     {
-        //TODO align code style private properties
         IPEndPoint _endPoint;
         Subject<string> _subject = new Subject<string>();
         int _agentId;
@@ -99,19 +98,19 @@ namespace Agent
               () => Console.WriteLine("In agent #{0} client #{1} completed", _agentId, name)))
             {
                 Console.WriteLine("Agent #{0} client #{1} started.  Waiting for basic service notifications...", _agentId, name);
-                Console.ReadKey(intercept: true); ////==> TODO remove but safely
+                Console.ReadKey(intercept: true); //DO NOT REMOVE it. leads to ProtocolNegotiationError
             }
         }
 
         public void MoveToPoint(Point3D targetPosition)
         {
             int i = 0;
-            while (_currentPosition != targetPosition && i < 50)//==>TODO Figure how to do restriction instead hard codded value
+            while (_currentPosition != targetPosition && i < 50)//==>TODO Figure how to limit time of work
             {
                 Point3D nextPosition = GeometryHelper.GetNextPosition(_currentPosition, targetPosition, _step);
 
                 //Check that Agent is not moving to position where is any of known agens
-                if (!CheckIfAgentCrashOtherAgentOnNextStep(nextPosition))//intellectuality of Agent) 
+                if (!CheckIfCrashOtherAgentOnNextStep(nextPosition))//intellectuality of Agent) 
                 {
                     PublishAgentPosition(nextPosition);
                     _currentPosition = nextPosition;//moving itself
@@ -152,7 +151,7 @@ namespace Agent
                     lastPositionsKnownAgents.Add(agentId, position);
             }
         }
-        public bool CheckIfAgentCrashOtherAgentOnNextStep(Point3D nextPosition)
+        public bool CheckIfCrashOtherAgentOnNextStep(Point3D nextPosition)
         {
             Point3D[] sphereCentres = lastPositionsKnownAgents.Values.ToArray();
             return GeometryHelper.CheckIfPointCrossSpheres(nextPosition, sphereCentres, _step * 2);
@@ -160,7 +159,6 @@ namespace Agent
 
     }
 
-    //==>TODO Preperties names To PascalCase
     class TCPMesssege
     {
         public int SenderId { get; set; }

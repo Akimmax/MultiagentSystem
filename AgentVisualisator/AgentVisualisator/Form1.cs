@@ -10,40 +10,41 @@ namespace AgentVisualisator
 {
     public partial class Form1 : Form
     {
-        //TODO Remove unnesesary delegates and event handlers
+
         public Form1()
         {
             InitializeComponent();
-            myDelegate = new SafeCallDelegate(runWriteTextSafe2);
-            drowOnChart3D = new DrowOnChartDelegate3D(DrawPointOnChart2);
-            chartHelper = new Chart3DGraphicsVisualisator();
-            chartHelper.prepare3dChart(this.chart1, this.chartArea1, maxSeriesNumber);
+            writeText = new WriteTextDelegate(WriteText);
+            drawOnChart = new DrawOnChartDelegate(DrawPointOnChart);
+
+            visualisator = new Chart3DGraphicsVisualisator();
+            visualisator.prepare3dChart(this.chart1, this.chartArea1, maxSeriesNumber);
 
         }
-        public delegate void SafeCallDelegate(string text);//TODO  Rename
-        public SafeCallDelegate myDelegate;//TODO  Rename 
-        public delegate void DrowOnChartDelegate3D(System.Windows.Media.Media3D.Point3D p, int seriesId);
-        public DrowOnChartDelegate3D drowOnChart3D;//TODO  Rename 
+        public delegate void WriteTextDelegate(string text);
+        public WriteTextDelegate writeText;
+        public delegate void DrawOnChartDelegate(System.Windows.Media.Media3D.Point3D p, int seriesId);
+        public DrawOnChartDelegate drawOnChart;
 
-        Chart3DGraphicsVisualisator chartHelper;
+        Chart3DGraphicsVisualisator visualisator;
         int maxSeriesNumber = 10;
 
-        private void runWriteTextSafe2(string text)//TODO  Rename 
+        private void WriteText(string text)
         {
             listBox1.Items.Add(text);
         }
 
-        private void DrawPointOnChart2(System.Windows.Media.Media3D.Point3D p, int seriesId)//TODO  Rename 
+        private void DrawPointOnChart(System.Windows.Media.Media3D.Point3D p, int seriesId)//TODO  Rename 
         {
             //!!! IMPORTANT On chart Y is Z, Z is Y. Because we should swap params
-            chartHelper.AddXY3d(this.chart1.Series[seriesId], p.X, p.Z, p.Y);
-            string mess = "Drown on chart 3d" + seriesId + " " + p.X + " " + p.Y + " " + p.Z;
-            runWriteTextSafe2(mess);
+            visualisator.AddXY3d(this.chart1.Series[seriesId], p.X, p.Z, p.Y);
+            string message = "Drown on chart 3d" + seriesId + " " + p.X + " " + p.Y + " " + p.Z;
+            WriteText(message);
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            var tcpAgent = new TCPClient(0);
+            var tcpAgent = new TCPClient(id : 0);
             tcpAgent.form = this;
             string ip = "127.0.0.1";
             string ip2 = "127.0.0.1";
@@ -64,7 +65,7 @@ namespace AgentVisualisator
             if (chart.Series.Count < 1) return;
             if (chart.Series[0].Points.Count < 1) return;
 
-            chartHelper.HandlePaintEventForChart(chart, e);
+            visualisator.HandlePaintEventForChart(chart, e);
         }
 
     }

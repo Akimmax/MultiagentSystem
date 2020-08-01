@@ -10,7 +10,7 @@ using System.Windows.Media.Media3D;
 
 namespace AgentVisualisator
 {
-
+    //==> TODO Move code to infasructure to re-use
     class TCPClient
     {
         private int _agentId;
@@ -29,45 +29,45 @@ namespace AgentVisualisator
               (from value in client.Query()
                select value);
 
+            //Handle messages published by this certain agent
             using (query.Subscribe(
               value => {
-                  var messsege = JsonSerializer.Deserialize<TCPMessage>(value); ////==> TODO extract to log
+                  var messsege = JsonSerializer.Deserialize<TCPMessage>(value); ////==> TODO extract to logger and messege factory
                   var str = $"Agent #{ _agentId}, Client #{name} received message from {messsege.SenderId} :X = {messsege.CurrentAgentPosition.X} ; Y  = {messsege.CurrentAgentPosition.Y} ;  z  = {messsege.CurrentAgentPosition.Z} === {DateTime.Now.ToString("hh:mm:ss.fff")} ";
-                  PrintText(str);
+                  WriteToListBox(str);
 
-                  DisplayOnChart3D(messsege.CurrentAgentPosition, messsege.SenderId);
+                  DisplayPositionOnChart(messsege.CurrentAgentPosition, messsege.SenderId);
               },
               ex =>
               {
-                  PrintText($"Error In agent #{_agentId} in client #{name}: {ex.Message}");
+                  WriteToListBox($"Error In agent #{_agentId} in client #{name}: {ex.Message}");
               },
               () => {
                   Console.WriteLine("In agent #{0} client #{1} completed", _agentId, name);
               }
               ))
-            {            
-                
-                var x = Console.Read();
-                Thread.Sleep(50000);////==> TODO remove //Console.ReadKey(intercept: true); ////==> TODO remove 
+            {
+                var x = Console.Read();//==> TODO remove somehow
+                Thread.Sleep(50000);////==> TODO remove somehow //Console.ReadKey(intercept: true);
             }
         }
-        public void PrintText(string myString)
+        public void WriteToListBox(string myString)
         {
-            form.Invoke(form.myDelegate, new object[] { myString });
+            form.Invoke(form.writeText, new object[] { myString });
         }
 
-        public void DisplayOnChart3D(Point3D position, int agentId)
+        public void DisplayPositionOnChart(Point3D position, int agentId)
         {
-            form.Invoke(form.drowOnChart3D, new object[] { position, agentId });
+            form.Invoke(form.drawOnChart, new object[] { position, agentId });
             string mess = "Try drow on chart " + agentId + " " + position.X + " " + position.Y;
-            PrintText(mess);
+            WriteToListBox(mess);
         }
 
     }
 
     class TCPMessage
     {
-        public int SenderId { get; set; } //==>TODO Name To PascalCase
+        public int SenderId { get; set; }
         public Point3D CurrentAgentPosition { get; set; }
         public string Details { get; set; }
     }

@@ -5,7 +5,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 namespace AgentVisualisator.Graphic
 {
     class Chart3DGraphicsRenderer
-    {
+    {       
         public void renderLines(List<List<PointF>> data, Graphics graphics, Chart chart, bool curves)
         {
             for (int i = 0; i < chart.Series.Count; i++)

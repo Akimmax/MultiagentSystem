@@ -10,14 +10,14 @@ namespace AgentVisualisator.Graphic
         Chart3DGraphicsRenderer renderingHelper;
 
         const int pointwidth = 4;
-        public Chart3DGraphicsVisualisator()//TODO Use builder pattern
+        public Chart3DGraphicsVisualisator()
         {
             renderingHelper = new Chart3DGraphicsRenderer();
         }
 
         bool isDrawingLinesRequired = false;
 
-        public void prepare3dChart(Chart chart, ChartArea chartArea, int maxSeriesNumber)//TODO Use builder pattern
+        public void prepare3dChart(Chart chart, ChartArea chartArea, int maxSeriesNumber)//TODO Apply builder pattern
         {
             ConfigureChartArea(chartArea);
             AddSeriesCollections(chart, maxSeriesNumber);

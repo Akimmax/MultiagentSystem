@@ -9,9 +9,7 @@ namespace AgentLauncher
 {
     //==> TODO Move code to infasructure to re-use
     class GeometryHelper
-    {
-
-        //==> TODO Move code to shared geometry libary
+    {        
         public static IEnumerable<AgentInfo> MapAgentToFigurePoints(AgentInfo[] agentsInfo, Figure figure)
         {
             List<Point3D> tempPointSet = new List<Point3D>(figure.PointSet);

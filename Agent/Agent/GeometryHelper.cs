@@ -9,6 +9,7 @@ namespace Agent
     {
         //==> TODO Move code to infasructure to re-use
         //==> TODO Add tests
+        //==>TODO add math formulas to doc
         //==> TODO Rework naming
         //Find the fastest way to make figure using agents, find nearest corner of figure for each agent
         public static IEnumerable<AgentInfo> MapAgentToFigurePoints(AgentInfo[] agentsInfo, Figure figure)
@@ -40,8 +41,7 @@ namespace Agent
             return agentGoals;
 
         }
-
-        //==>TODO add math formula
+        
         public static double GetDistanseBetweenTwoPoints(Point3D point1, Point3D point2)
         {
             return new Vector3D(
@@ -51,7 +51,6 @@ namespace Agent
                        .Length;
         }
 
-        //==>TODO add math formula
         public static Point3D GetNextPosition(Point3D currentPos, Point3D tergetPos, double step)
         {
             Vector3D vector = new Vector3D(tergetPos.X - currentPos.X, tergetPos.Y - currentPos.Y, tergetPos.Z - currentPos.Z);
@@ -63,7 +62,6 @@ namespace Agent
             return new Point3D(currentPos.X + stepVector.X, currentPos.Y + stepVector.Y, currentPos.Z + stepVector.Z);//math vectors sum
         }
 
-        //==>TODO add math formula
         //Check is any sphere contains point.
         //To avoid crash agent should not be close then some distance. If this this distance is radius of sphere and position of 1st agent is center, all points-positions of other agent should be always outside this spheres
         public static bool CheckIfPointCrossSpheres(Point3D point, Point3D[] sphereCentres, double sphereRadius)
@@ -89,7 +87,6 @@ namespace Agent
         public Point3D[] PointSet;
     }
 
-    //==>TODO rename
     class PointInfo
     {
         public double distanseToCurrentAgent;
