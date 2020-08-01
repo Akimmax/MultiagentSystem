@@ -1,15 +1,11 @@
 ﻿using Qactive;
 using System;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Reflection;
 using System.Threading;
-using System.Windows;
 using System.Text.Json;////==> TODO use newtosoft
-using System.Text.Json.Serialization;
 using System.Windows.Media.Media3D;
 using System.Collections.Generic;
 
@@ -17,54 +13,61 @@ namespace Agent
 {
     class Agent
     {
-        private IPEndPoint _endPoint;
-        Subject<string> subject = new Subject<string>();
-        private int _agentId;
-        private readonly object lockObj = new object();
+        //TODO align code style private properties
+        IPEndPoint _endPoint;
+        Subject<string> _subject = new Subject<string>();
+        int _agentId;
+        readonly object _lockObj = new object();
 
-        Dictionary<int, Point3D> lastPositionsKnownAgents = new Dictionary<int, Point3D>();
-        //==================================== ==>TODO Extract into separate class
-        //Point _currentPosition = new Point(0, 0);
-        Point3D _currentPosition2 = new Point3D(0, 0, 0);//==>TODO Rename
-        double _step = 8;
-        //==================================== ==>TODO Extract into separate class
+        Dictionary<int, Point3D> lastPositionsKnownAgents = new Dictionary<int, Point3D>();// positions other Agents
+        
+        Point3D _currentPosition = new Point3D(0, 0, 0);//==>TODO Extract into base class MovableAgent
+        double _step = 8;// speed: 8 per tick
+        
         public Agent(IPAddress endPoint, int port, int id)
         {
             _endPoint = new IPEndPoint(endPoint, port: port);
             _agentId = id;
         }
 
-        public void SetPosition2(Point3D position)//==>TODO Rename
+        public void SetPosition(Point3D position)
         {
-            _currentPosition2 = position;
+            _currentPosition = position;
         }
 
-        public void StartService()//==>TODO Extract into separate class
+        public void StartService()//==>TODO!!! Extract into separate class
         {
 
             Logger.PrintServerStarted(_agentId, _endPoint);
 
-            IObservable<string> source = subject.AsObservable();
+            IObservable<string> source = _subject.AsObservable();
 
+            //==>TODO move code to separate handlers
+            //Handle messages published only by this agent
             source.Subscribe(value => {
-                var messsege = JsonSerializer.Deserialize<TCPMesssege3D>(value);
-                Logger.PrintGeneratedMessage(_agentId, messsege);
+                var messsege = JsonSerializer.Deserialize<TCPMesssege>(value);
+                Logger.PrintGeneratedMessage(_agentId, messsege); 
             });
 
-            subject.OnNext(
-                JsonSerializer.Serialize(new TCPMesssege3D() { senderId = _agentId, currentPosition3D = _currentPosition2, details = "details" }
+            //==>TODO Rework without serialization to be able use LINQ to QbservableTcp 
+            //Publish message with initial agent status
+            _subject.OnNext(
+                JsonSerializer.Serialize(new TCPMesssege() { SenderId = _agentId, CurrentAgentPosition = _currentPosition, Details = "details" }
                 ));
 
+            //Start TCP server. service starts serve the source
             var service = source.ServeQbservableTcp<string>(
               _endPoint,
                new QbservableServiceOptions() { SendServerErrorsToClients = true, EnableDuplex = true, AllowExpressionsUnrestricted = true });
-    
+
+            //==>TODO move code to separate handlers
+            //Handle errors during work service
             service.Subscribe(
               terminatedClient =>
               {
                   foreach (var ex in terminatedClient.Exceptions)
                   {
-                      Console.WriteLine("Basic service error: {0}", ex.SourceException.Message);//==>TODO Extract messeges to logger
+                      Console.WriteLine("Basic service error: {0}", ex.SourceException.Message);//==>TODO Extract messages to logger
                   }
 
                   Console.WriteLine("Basic client shutdown: " + terminatedClient);
@@ -75,71 +78,73 @@ namespace Agent
 
 
         public void RunClient(IPAddress endPoint, int port, int name)//==>TODO Extract into separate class
-        {
+        {            
             var client = new TcpQbservableClient<string>(endPoint, port);
 
             var query =
               (from value in client.Query()
                select value);
 
+            //==>TODO move code to separate handlers
+            //Handle messages published by this certain agent
+            //==>TODO Extract messeges to logger
             using (query.Subscribe(
               value => {
-                  var messsege = JsonSerializer.Deserialize<TCPMesssege3D>(value);
+                  var messsege = JsonSerializer.Deserialize<TCPMesssege>(value);
 
                   Logger.PrintReceivedMessage(_agentId, messsege, name);
-                  SaveAgentPosition(_agentId, messsege.currentPosition3D);
-              },
-              ex => Console.WriteLine("Error In agent #{1} in client #{2}: {0}", ex.Message, _agentId, name), //==>TODO Extract messeges to logger
-              () => Console.WriteLine("In agent #{0} client #{1} completed", _agentId, name))) 
+                  SaveAgentPosition(_agentId, messsege.CurrentAgentPosition);//Handle recieved info published by other agents
+              },              
+              ex => Console.WriteLine("Error In agent #{1} in client #{2}: {0}", ex.Message, _agentId, name), 
+              () => Console.WriteLine("In agent #{0} client #{1} completed", _agentId, name)))
             {
                 Console.WriteLine("Agent #{0} client #{1} started.  Waiting for basic service notifications...", _agentId, name);
                 Console.ReadKey(intercept: true); ////==> TODO remove but safely
             }
         }
 
-        public void PublishCurrentAgentPosition2()
-        {
-            var obj = new TCPMesssege3D() { senderId = _agentId, currentPosition3D = _currentPosition2, details = "As" };//==> TODO rework in 1 line
-            string message = JsonSerializer.Serialize<TCPMesssege3D>(obj);
-            subject.OnNext(message);
-        }
-
-        public void MoveToPoint2(Point3D targetPosition)
+        public void MoveToPoint(Point3D targetPosition)
         {
             int i = 0;
-            while (_currentPosition2 != targetPosition && i < 50)
+            while (_currentPosition != targetPosition && i < 50)//==>TODO Figure how to do restriction instead hard codded value
             {
-                Point3D nextPosition = GeometryHelper.GetNextPosition(_currentPosition2, targetPosition, _step);
+                Point3D nextPosition = GeometryHelper.GetNextPosition(_currentPosition, targetPosition, _step);
 
-                if (!CheckIfAgentCrashOtherAgentOnNextStep(nextPosition))
+                //Check that Agent is not moving to position where is any of known agens
+                if (!CheckIfAgentCrashOtherAgentOnNextStep(nextPosition))//intellectuality of Agent) 
                 {
-                    PublishNextAgentPosition2(nextPosition);
-                    _currentPosition2 = nextPosition;
+                    PublishAgentPosition(nextPosition);
+                    _currentPosition = nextPosition;//moving itself
                 }
                 else
                 {
-                    PublishNextAgentPosition2(_currentPosition2);//Skip step. wait until moving safe
-                    Logger.PrintTraectoryConflict(_agentId, _currentPosition2);
+                    PublishAgentPosition(_currentPosition);//Skip step. wait until moving is safe
+                    Logger.PrintTraectoryConflict(_agentId, _currentPosition);
                 }
-                
+
                 i++;
-                Thread.Sleep(1000);
+                Thread.Sleep(1000);////TODO Extract to config.
             }
 
-            PublishCurrentAgentPosition2();
+            PublishCurrentAgentPosition();//Final message
         }
 
-        public void PublishNextAgentPosition2(Point3D nextPosition)
+        public void PublishAgentPosition(Point3D nextPosition)
         {
-            var obj = new TCPMesssege3D() { senderId = _agentId, currentPosition3D = nextPosition, details = "As" };
-            string message = JsonSerializer.Serialize<TCPMesssege3D>(obj);
-            subject.OnNext(message);
+            var obj = new TCPMesssege() { SenderId = _agentId, CurrentAgentPosition = nextPosition, Details = "As" };
+            string message = JsonSerializer.Serialize<TCPMesssege>(obj);
+            _subject.OnNext(message);//Published info
         }
 
+        public void PublishCurrentAgentPosition()
+        {
+            PublishAgentPosition(_currentPosition);
+        }
 
+        //Store info (positions) from other agents in system
         public void SaveAgentPosition(int agentId, Point3D position)
         {
-            lock (lockObj)
+            lock (_lockObj)//each client works in own tread, this part shold be tread safe
             {
                 if (lastPositionsKnownAgents.ContainsKey(agentId))
                     lastPositionsKnownAgents[agentId] = position; // or throw exception        
@@ -153,17 +158,13 @@ namespace Agent
             return GeometryHelper.CheckIfPointCrossSpheres(nextPosition, sphereCentres, _step * 2);
         }
 
-        //==================================== ==>TODO Extract into separate class
     }
 
-
-    class TCPMesssege3D
+    //==>TODO Preperties names To PascalCase
+    class TCPMesssege
     {
-        public int senderId { get; set; } //==>TODO Name To PascalCase
-
-
-        public Point3D currentPosition3D { get; set; }
-
-        public string details { get; set; }
+        public int SenderId { get; set; }
+        public Point3D CurrentAgentPosition { get; set; }
+        public string Details { get; set; }
     }
 }

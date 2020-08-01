@@ -16,8 +16,8 @@ namespace AgentVisualisator
         private int _agentId;
         public Form1 form;
 
-        public TCPClient( int id)
-        {        
+        public TCPClient(int id)
+        {
             _agentId = id;
         }
 
@@ -31,22 +31,23 @@ namespace AgentVisualisator
             using (query.Subscribe(
               value => {
                   var messsege = JsonSerializer.Deserialize<TCPMessage>(value); ////==> TODO extract to log
-                  var str = $"Agent #{ _agentId}, Client #{name} received message from {messsege.senderId} :X = {messsege.currentPosition3D.X} ; Y  = {messsege.currentPosition3D.Y} ;  z  = {messsege.currentPosition3D.Z} === {DateTime.Now.ToString("hh:mm:ss.fff")} ";
+                  var str = $"Agent #{ _agentId}, Client #{name} received message from {messsege.SenderId} :X = {messsege.CurrentAgentPosition.X} ; Y  = {messsege.CurrentAgentPosition.Y} ;  z  = {messsege.CurrentAgentPosition.Z} === {DateTime.Now.ToString("hh:mm:ss.fff")} ";
                   PrintText(str);
 
-                 // DisplayOnForm(messsege.currentPosition3D);
-                  DisplayOnChart3D(messsege.currentPosition3D, messsege.senderId);
+                  // DisplayOnForm(messsege.currentPosition3D);
+                  DisplayOnChart3D(messsege.CurrentAgentPosition, messsege.SenderId);
               },
               ex =>
-              {                        
+              {
                   PrintText($"Error In agent #{_agentId} in client #{name}: {ex.Message}");
 
               },
               () => {
-                  Console.WriteLine("In agent #{0} client #{1} completed", _agentId, name); }
+                  Console.WriteLine("In agent #{0} client #{1} completed", _agentId, name);
+              }
               ))
             {
-               // PrintText($"Agent #{_agentId} client #{name} started.  Waiting for basic service notifications...");
+                // PrintText($"Agent #{_agentId} client #{name} started.  Waiting for basic service notifications...");
                 //Console.ReadKey(intercept: true); ////==> TODO remove 
                 var x = Console.Read();
                 Thread.Sleep(50000);////==> TODO remove 
@@ -81,8 +82,8 @@ namespace AgentVisualisator
 
     class TCPMessage
     {
-        public int senderId { get; set; } //==>TODO Name To PascalCase
-        public Point3D currentPosition3D { get; set; }
-        public string details { get; set; }
+        public int SenderId { get; set; } //==>TODO Name To PascalCase
+        public Point3D CurrentAgentPosition { get; set; }
+        public string Details { get; set; }
     }
 }
