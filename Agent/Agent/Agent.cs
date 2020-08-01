@@ -1,11 +1,11 @@
-﻿using Qactive;
+﻿using Qactive;//use almost pure tcp/ip without massege brokers for better real-time orientation of app
 using System;
 using System.Linq;
 using System.Net;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
-using System.Text.Json;////==> TODO use newtosoft
+using System.Text.Json;//==>TODO#4 use newtosoft
 using System.Windows.Media.Media3D;
 using System.Collections.Generic;
 
@@ -20,7 +20,7 @@ namespace Agent
 
         Dictionary<int, Point3D> lastPositionsKnownAgents = new Dictionary<int, Point3D>();// positions other Agents
         
-        Point3D _currentPosition = new Point3D(0, 0, 0);//==>TODO Extract into base class MovableAgent
+        Point3D _currentPosition = new Point3D(0, 0, 0);//==>TODO#7 Extract into base class MovableAgent
         double _step = 8;// speed: 8 per tick
         
         public Agent(IPAddress endPoint, int port, int id)
@@ -34,21 +34,21 @@ namespace Agent
             _currentPosition = position;
         }
 
-        public void StartService()//==>TODO!!! Extract into separate class
+        public void StartService()//==>TODO#8 Extract into separate class with massege handling
         {
 
             Logger.PrintServerStarted(_agentId, _endPoint);
 
             IObservable<string> source = _subject.AsObservable();
 
-            //==>TODO move code to separate handlers
+            //==>TODO#8 move code to separate handlers
             //Handle messages published only by this agent
             source.Subscribe(value => {
                 var messsege = JsonSerializer.Deserialize<TCPMesssege>(value);
                 Logger.PrintGeneratedMessage(_agentId, messsege); 
             });
 
-            //==>TODO Rework without serialization to be able use LINQ to QbservableTcp 
+            //==>TODO#9 Rework without serialization to be able use LINQ to QbservableTcp 
             //Publish message with initial agent status
             _subject.OnNext(
                 JsonSerializer.Serialize(new TCPMesssege() { SenderId = _agentId, CurrentAgentPosition = _currentPosition, Details = "details" }
@@ -59,14 +59,14 @@ namespace Agent
               _endPoint,
                new QbservableServiceOptions() { SendServerErrorsToClients = true, EnableDuplex = true, AllowExpressionsUnrestricted = true });
 
-            //==>TODO move code to separate handlers
+            //==>TODO#8 move code to separate handlers
             //Handle errors during work service
             service.Subscribe(
               terminatedClient =>
               {
                   foreach (var ex in terminatedClient.Exceptions)
                   {
-                      Console.WriteLine("Basic service error: {0}", ex.SourceException.Message);//==>TODO Extract messages to logger
+                      Console.WriteLine("Basic service error: {0}", ex.SourceException.Message);//==>TODO#5 Extract messages to logger
                   }
 
                   Console.WriteLine("Basic client shutdown: " + terminatedClient);
@@ -76,7 +76,7 @@ namespace Agent
         }
 
 
-        public void RunClient(IPAddress endPoint, int port, int name)//==>TODO Extract into separate class
+        public void RunClient(IPAddress endPoint, int port, int name)//==>TODO#8 Extract into separate class
         {            
             var client = new TcpQbservableClient<string>(endPoint, port);
 
@@ -84,9 +84,9 @@ namespace Agent
               (from value in client.Query()
                select value);
 
-            //==>TODO move code to separate handlers
+            //==>TODO#8 move code to separate handlers
             //Handle messages published by this certain agent
-            //==>TODO Extract messeges to logger
+            //==>TODO#5 Extract messeges to logger
             using (query.Subscribe(
               value => {
                   var messsege = JsonSerializer.Deserialize<TCPMesssege>(value);
@@ -105,7 +105,7 @@ namespace Agent
         public void MoveToPoint(Point3D targetPosition)
         {
             int i = 0;
-            while (_currentPosition != targetPosition && i < 50)//==>TODO Figure how to limit time of work
+            while (_currentPosition != targetPosition && i < 50)//==>TODO#10 Figure how to limit time of work
             {
                 Point3D nextPosition = GeometryHelper.GetNextPosition(_currentPosition, targetPosition, _step);
 

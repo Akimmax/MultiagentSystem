@@ -15,7 +15,7 @@ namespace Agent
         static void Main(string[] args)
         {
             AppOptions opt = new AppOptions();
-            opt.initalOptions(args);//==>TODO rework to receive unlimited numbers of agents
+            opt.initalOptions(args);//==>TODO#11 rework to receive unlimited numbers of agents
 
             var tcpAgent = new Agent(System.Net.IPAddress.Parse(opt.agentIp), opt.agentPort, opt.agentId);
             tcpAgent.SetPosition(new Point3D(opt.currentPosition.X, opt.currentPosition.Y, opt.currentPosition.Z));

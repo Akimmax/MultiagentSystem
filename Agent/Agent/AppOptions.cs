@@ -5,10 +5,10 @@ using System.Windows.Media.Media3D;
 namespace Agent
 {
 
-    //==>TODO rework to receive unlimited numbers of agents
+    //==>TODO#11 rework to receive unlimited numbers of agents
     class AppOptions
     {
-        //==>TODO Rework using reflection
+        //==>TODO#12 Rework using reflection
         public void initalOptions(string[] args)
         {
             Console.WriteLine("initalOptions " + args.ToString());
@@ -28,7 +28,7 @@ namespace Agent
             this.targetPosition = get3DPoint(args[10]);
 
         }
-        //==>TODO Rework using reflection
+        //==>TODO#12 Rework using reflection
         public void printOptions()
         {
             Console.WriteLine("printOptions ");

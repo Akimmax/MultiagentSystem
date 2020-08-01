@@ -10,8 +10,8 @@ namespace Agent
 {
     class Logger
     {
-        //==>TODO Write to file or db instead console
-        //==>TODO Add factory for messages
+        //==>TODO#15 Rework logging. Write to file or db instead console
+        //==>TODO#5 Add factory for messages
         public static void PrintServerStarted(int _agentId, IPEndPoint _endPoint)
         {
             Console.WriteLine("Agent #{0} Server Started at: Ip = {2}; Port = {3}, time =  {1}",

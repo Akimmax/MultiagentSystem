@@ -5,12 +5,12 @@ using System.Net;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Windows;
-using System.Text.Json;////==> TODO use newtosoft
+using System.Text.Json;//==>TODO#4 use newtosoft
 using System.Windows.Media.Media3D;
 
 namespace AgentVisualisator
 {
-    //==> TODO Move code to infasructure to re-use
+    //==>TODO#1 Move code to infasructure to re-use
     class TCPClient
     {
         private int _agentId;
@@ -32,7 +32,7 @@ namespace AgentVisualisator
             //Handle messages published by this certain agent
             using (query.Subscribe(
               value => {
-                  var messsege = JsonSerializer.Deserialize<TCPMessage>(value); ////==> TODO extract to logger and messege factory
+                  var messsege = JsonSerializer.Deserialize<TCPMessage>(value); //==>TODO#5 extract to logger and messege factory
                   var str = $"Agent #{ _agentId}, Client #{name} received message from {messsege.SenderId} :X = {messsege.CurrentAgentPosition.X} ; Y  = {messsege.CurrentAgentPosition.Y} ;  z  = {messsege.CurrentAgentPosition.Z} === {DateTime.Now.ToString("hh:mm:ss.fff")} ";
                   WriteToListBox(str);
 
@@ -47,8 +47,8 @@ namespace AgentVisualisator
               }
               ))
             {
-                var x = Console.Read();//==> TODO remove somehow
-                Thread.Sleep(50000);////==> TODO remove somehow //Console.ReadKey(intercept: true);
+                var x = Console.Read();//==>TODO#6 remove somehow
+                Thread.Sleep(50000);////==>TODO#6 remove somehow //Console.ReadKey(intercept: true);
             }
         }
         public void WriteToListBox(string myString)

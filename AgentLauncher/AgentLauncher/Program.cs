@@ -17,7 +17,7 @@ namespace AgentLauncher
             //TODO Make pre-definite set of figures
             var figure = new Figure();
             figure.PointSet = new Point3D[] {
-                ToPoint("0,0,0"),//==>TODO Use Point3D constructor instead
+                ToPoint("0,0,0"),//==>TODO#2 Use Point3D constructor instead
                 ToPoint("0,80,0"),
                 ToPoint("80,0,0"),
             };
@@ -28,7 +28,7 @@ namespace AgentLauncher
             string port2 = "38246";
             string port3 = "38244";
 
-            Point3D p1 = ToPoint("0,0,100");//==>TODO Use Point3D constructor instead
+            Point3D p1 = ToPoint("0,0,100");//==>TODO#2 Use Point3D constructor instead
             Point3D p2 = ToPoint("50,150,0");
             Point3D p3 = ToPoint("150,40,10");
 
@@ -38,7 +38,7 @@ namespace AgentLauncher
                  new AgentInfo(){AgentId = 3, currentPosition = p3},
             };
 
-            //==>TODO Move this logic to Agent itself, to allow an Agent decide and act absolutely independently
+            //==>TODO#3 Move this logic to Agent itself, to allow an Agent decide and act absolutely independently
             var result = GeometryHelper.MapAgentToFigurePoints(agentsInfo, figure).ToArray();
             
             var pt1 = result[0].targetPosition;
@@ -68,7 +68,7 @@ namespace AgentLauncher
             return $"{p.X},{p.Y},{p.Z}";
         }
 
-        static public Point3D ToPoint(string args)//==>TODO Use Point3D constructor instead remove
+        static public Point3D ToPoint(string args)//==>TODO#2 Use Point3D constructor instead, remove method
         {
             var parameters = args.Split(',').ToList<string>();
             var coordinates = parameters.Select(str => {

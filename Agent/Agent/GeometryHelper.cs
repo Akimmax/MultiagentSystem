@@ -7,10 +7,9 @@ namespace Agent
 {
     class GeometryHelper
     {
-        //==> TODO Move code to infasructure to re-use
-        //==> TODO Add tests
-        //==>TODO add math formulas to doc
-        //==> TODO Rework naming
+        //==>TODO#1 Move code to infasructure to re-usee
+        //==>TODO#13 Add tests
+        //==>TODO#14 add math formulas to doc
         //Find the fastest way to make figure using agents, find nearest corner of figure for each agent
         public static IEnumerable<AgentInfo> MapAgentToFigurePoints(AgentInfo[] agentsInfo, Figure figure)
         {
